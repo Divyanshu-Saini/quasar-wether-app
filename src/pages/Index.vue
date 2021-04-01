@@ -81,12 +81,22 @@ export default {
   methods: {
     getLocation() {
       this.$q.loading.show();
-      navigator.geolocation.getCurrentPosition((position) => {
-        console.log("postion :", position);
-        this.lat = position.coords.latitude;
-        this.long = position.coords.longitude;
-        this.getWetherByCoords();
-      });
+      if (this.$q.platform.is.electron) {
+        console.log('this.$q.platform.is.electron', this.$q.platform.is.electron)
+        this.$axios(`https://freegeoip.app/json/`).then((response)=>{
+          console.log('Response :', response);
+          this.lat = response.data.latitude;
+          this.long = response.data.longitude;
+          this.getWetherByCoords();
+        })
+      } else {
+        navigator.geolocation.getCurrentPosition((position) => {
+          console.log("postion :", position);
+          this.lat = position.coords.latitude;
+          this.long = position.coords.longitude;
+          this.getWetherByCoords();
+        });
+      }
     },
     getWetherByCoords() {
       this.$q.loading.show();
